@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link rel="icon" href="assets/favicon.ico" />
+        <meta property="og:image" content="assets/cover_image.png" />
+        <meta property="og:title" content="Little Dig Game" />
+        <title>Little Dig Game</title>
+
+        <noscript>
+            <style>
+                body {
+                    visibility: visible !important;
+                }
+                #header,
+                #game {
+                    display: none;
+                }
+            </style>
+        </noscript>
+    <script defer src="bundle.js"></script></head>
+    <body style="visibility: hidden; overflow: hidden">
+        <script src="chs.js"></script>
+        <script src="core.js"></script>
+        <!-- Firefox hack for dealing with FOUC -->
+        <script>
+            0;
+        </script>
+        <div id="header">
+            <div>
+                <button id="new-game">New Game</button>
+                <button id="load-game" disabled>Load Game</button>
+                <button id="save-game" disabled class="hidden">Save Game</button>
+
+                <button id="pause-resume">
+                    <i id="pause-icon" class="fa-solid fa-pause"></i>
+                    <i id="play-icon" class="fa-solid fa-play hidden"></i>
+                </button>
+                <div id="settings-container">
+                    <button id="settings-button"><i class="fa-solid fa-gear"></i></button>
+                    <div id="settings-dropdown" class="hidden">
+                        <label for="sfx-volume-slider" style="grid-column: 1">SFX</label>
+                        <div id="sfx-volume-container" style="grid-column: 2"></div>
+                        <label id="censor-label" for="censor" style="grid-column: 1"
+                            >Censor n<span id="to-be-censored">ipp</span>les</label
+                        >
+                        <input type="checkbox" id="censor" style="grid-column: 2" />
+                        <label for="dialog-durations" style="grid-column: 1">Dialog duration</label>
+                        <div id="dialog-durations" style="grid-column: 2">
+                            <label>
+                                <input
+                                    type="radio"
+                                    id="short-dialogs"
+                                    name="drone"
+                                    value="0.5"
+                                />Short</label
+                            >
+                            <label>
+                                <input
+                                    type="radio"
+                                    id="medium-dialogs"
+                                    name="drone"
+                                    value="1"
+                                    checked
+                                /><span>Med.</span></label
+                            >
+                            <label>
+                                <input
+                                    type="radio"
+                                    id="long-dialogs"
+                                    name="drone"
+                                    value="1.5"
+                                />Long
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="debug" class="hidden">
+                <div>
+                    <button id="next-pixel-body">Next Pixel Body (dbg)</button>
+                    <label> <input type="checkbox" id="blood" /> Veia mode</label>
+                    <label> <input type="checkbox" id="debug-checkbox" /> Debugging Mode</label>
+                </div>
+                <div class="break"></div>
+                <div>
+                    <button id="plus-10">+10&nbsp;<i class="fa-solid fa-austral-sign"></i></button>
+                    <button id="plus-100">
+                        +100&nbsp;<i class="fa-solid fa-austral-sign"></i>
+                    </button>
+                    <button id="plus-1000">
+                        +1000&nbsp;<i class="fa-solid fa-austral-sign"></i>
+                    </button>
+                    <button id="plus-10000">
+                        +10000&nbsp;<i class="fa-solid fa-austral-sign"></i>
+                    </button>
+                    <button id="bot"></button>
+                </div>
+            </div>
+        </div>
+        <div id="pregame-placeholder">
+            <div id="title-container">
+                <h1 class="blur-in-from-top">Little Dig Game</h1>
+            </div>
+
+            <noscript>
+                <span>My apologies, but you need Javascript enabled to play this game.</span>
+            </noscript>
+
+            <img src="assets/banner.png" />
+        </div>
+        <div id="game">
+            <div id="overlay" class="hidden">
+                <div id="info-container">
+                    <div>
+                        <span id="health">100.0</span><span>%</span>&nbsp;<i
+                            id="planet-icon"
+                            class="fa-solid fa-globe"
+                        ></i
+                        ><i id="serpent-icon" class="hidden fa-solid fa-worm"></i>
+                    </div>
+                    <div>
+                        <span id="aspis">0</span>&nbsp;<i class="fa-solid fa-austral-sign"></i>
+                    </div>
+                    <div>
+                        <span id="little-guy-count">0</span>&nbsp;<i
+                            class="fa-solid fa-person-walking"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>
+                            <span id="spawn-cost">0</span>&nbsp;<i
+                                class="fa-solid fa-austral-sign"
+                            ></i
+                            >&nbsp;for next&nbsp;<i class="fa-solid fa-person-walking"></i
+                        ></span>
+                    </div>
+                    <div id="worker-ev-container" class="hidden">
+                        <span>
+                            <span id="worker-ev">0</span>&nbsp;<i
+                                class="fa-solid fa-austral-sign"
+                            ></i
+                            >&nbsp;expected per &nbsp;<i class="fa-solid fa-person-walking"></i
+                        ></span>
+                    </div>
+                    <div>
+                        <span>
+                            <span id="digs-per-death">2</span>&nbsp;<i
+                                class="fa-solid fa-person-digging"
+                            ></i
+                            >&nbsp;before&nbsp;<i class="fa-solid fa-skull"></i
+                        ></span>
+                    </div>
+                </div>
+                <button id="show-upgrades">
+                    <i class="fa-solid fa-flask"></i>
+                    <div id="purchasable-upgrade-count" class="notification hidden" role="status">
+                        0
+                    </div>
+                </button>
+                <button id="shield" class="hidden">
+                    <i class="fa-solid fa-shield-halved"></i>&nbsp;
+                    <div id="shield-cost-container">
+                        <span id="shield-cost">0</span>&nbsp;<i
+                            class="fa-solid fa-austral-sign"
+                        ></i>
+                    </div>
+                </button>
+                <!-- TBD: Generate the legened programmatically -->
+                <div id="legend">
+                    <span class="hidden"
+                        ><span class="dirt">■</span>/<span class="dirt-surface">■</span>: Dirt
+                        (+<span id="aspis-per-DIRT"></span>&nbsp;<i
+                            class="fa-solid fa-austral-sign"
+                        ></i
+                        >)<br
+                    /></span>
+                    <span class="hidden"
+                        ><span class="tombstone">■</span>: Tombstone (+<span
+                            id="aspis-per-TOMBSTONE"
+                        ></span
+                        >&nbsp;<i class="fa-solid fa-austral-sign"></i>)<br
+                    /></span>
+                    <span class="hidden"
+                        ><span class="gold">■</span>: Gold (+<span id="aspis-per-GOLD"></span
+                        >&nbsp;<i class="fa-solid fa-austral-sign"></i>)<br
+                    /></span>
+                    <span class="hidden"
+                        ><span class="diamond">■</span>: Diamond (+<span
+                            id="aspis-per-DIAMOND"
+                        ></span
+                        >&nbsp;<i class="fa-solid fa-austral-sign"></i>)<br
+                    /></span>
+                    <span class="hidden"
+                        ><span class="egg">■</span>: <span id="egg-legend-title">???</span> (+<span
+                            id="aspis-per-EGG"
+                        ></span
+                        >&nbsp;<i class="fa-solid fa-austral-sign"></i>)<br
+                    /></span>
+                    <span class="hidden"
+                        ><span class="serpent">■</span>:
+                        <span id="serpent-legend-title">???</span> (+<span
+                            id="aspis-per-SERPENT"
+                        ></span
+                        >&nbsp;<i class="fa-solid fa-austral-sign"></i>)<br
+                    /></span>
+                </div>
+                <div id="pause-scrim" class="hidden">
+                    <i id="pause-scrim-icon" class="fa-solid fa-pause"></i>
+                </div>
+            </div>
+            <div id="upgrades-container" class="hidden">
+                <div id="upgrades-header">
+                    <div>
+                        <span id="upgrades-aspis">0</span>&nbsp;<i
+                            class="fa-solid fa-austral-sign"
+                        ></i>
+                    </div>
+                    <h1 id="upgrades-title">Research</h1>
+                    <button id="hide-upgrades"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="upgrades-window">
+                    <div id="upgrades-hints"></div>
+                    <div id="upgrades"></div>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <span
+                >Copyright (©) 2025 Alec Douglas.
+                <a href="https://github.com/alecgdouglas/littlediggame" target="_blank"
+                    >Source code</a
+                >.</span
+            >
+        </div>
+<!--客服 开始-->
+<script src="//g8hh.github.io/static/js/jquery.min.js"></script>
+<link rel="stylesheet" href="//g8hh.github.io/static/css/kf.css" type="text/css" media="screen" charset="utf-8">
+<script src="//g8hh.github.io/static/js/kf.js"></script>
+<!-- 客服 结束 -->
+<!--站长统计-->
+    <div style="display: none">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?6581389daf4dd6fe7dbb4d20fdcb52a6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    </div>
+    </body>
+</html>
